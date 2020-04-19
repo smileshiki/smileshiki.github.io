@@ -10,8 +10,7 @@
         });
     </script>
 </head>
----
----
+
 layout:     post
 title:      JSON转模型 For YYModel
 subtitle:   使用 YYModel库 快速完成 JSON 转模型
