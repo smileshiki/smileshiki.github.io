@@ -15,7 +15,7 @@ tags:
 
 # 1、首先创建模型类
 
-$x^2$
+![](http://latex.codecogs.com/gif.latex?\\frac{1}{1+sin(x)})
 
 创建模型类我们可以通过[ESJsonFormat](https://github.com/EnjoySR/ESJsonFormat-Xcode)这款插件快速完成。
 
