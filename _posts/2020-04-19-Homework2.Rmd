@@ -1,0 +1,151 @@
+---
+title: "Homework2"
+author: "第9组"
+date: "2020/4/9"
+output: html_document
+---
+
+```{r setup, include=FALSE, fig.width=6, fig.height=6}
+knitr::opts_chunk$set(
+	echo = TRUE,
+	message = FALSE,
+	warning = FALSE
+)
+```
+**1. 首先载入各种包（已略去token），并且调用中国平安的股票与上证、深证及港股的全体股票代码。**
+```{r}
+pacman::p_load(Tushare,tidyverse,tidyquant,DT,anytime,corrplot)
+```
+
+```{r, echo=FALSE}
+api <- pro_api(token = '6cfaa7d80ac42f2fd840f8a0cf9c9b8d26887f16806d2f4162540162')
+bar <- pro_bar(token = '6cfaa7d80ac42f2fd840f8a0cf9c9b8d26887f16806d2f4162540162')
+```
+
+```{r}
+zgpa <- bar(ts_code='601318.SH',start_date="20140101",
+                end_date='20200407',adj="qfq")
+
+code_cn <- api(api_name = 'stock_basic')
+code_hk <- api(api_name = 'hk_basic')
+```
+**2. 我们将股票价格中存在缺失值的行删去，并使用for循环对上证和深证股票共3806支股票进行检索，发现只有002506.SZ的日收益率与中国平安呈负相关。由于耗时较长，此处仅展示代码，不再运行。**
+```
+stock_negative <- list()
+corr <- list()
+
+for (i in code_cn$ts_code){
+stock_negative[[i]] <- bar(ts_code=i,start_date="20140101",
+                end_date='20200407',adj="qfq")
+corr[[i]] <- rbind(zgpa,stock_negative[[i]]) %>%
+  select(ts_code,trade_date,close) %>% 
+  mutate(trade_date = as.Date(trade_date,format="%Y%m%d"),close = as.numeric(close)) %>% 
+  group_by(ts_code) %>%
+  tq_transmute(
+    select=close,
+    mutate_fun=dailyReturn,
+    col_rename='day_returns'
+  ) %>% 
+  pivot_wider(names_from='ts_code',values_from='day_returns') %>%
+  select(-trade_date) %>%
+  na.omit()%>%
+  cor()
+}
+```
+**3. 下图展示了002506.SZ的股价时间序列图，可以发现2014-1015年间有很大缺失值，不能说明该股票日收益率在2014-2020间与中国平安呈负相关。因此还需要寻找其他股票。**
+```{r}
+xxjc <- bar(ts_code='002506.SZ',start_date="20140101",
+                end_date='20200407',adj="qfq") %>%
+  mutate(trade_date = as.Date(trade_date,format="%Y%m%d"),close = as.numeric(close))
+ggplot(xxjc,aes(x=trade_date,y=close)) + geom_point()
+```
+
+**4. 重复上述步骤，我们从港股中找到了00091.HK,00115.HK与00164.HK三支股票满足题目条件且无明显的缺失值。**
+```{r}
+jxgj <- api(api_name='hk_daily',ts_code='00091.HK',start_date="20140101",
+                end_date='20200407',adj="qfq")
+jhjt <- api(api_name='hk_daily',ts_code='00115.HK',start_date="20140101",
+                end_date='20200407',adj="qfq")
+zgbl <- api(api_name='hk_daily',ts_code='00164.HK',start_date="20140101",
+                end_date='20200407',adj="qfq")
+```
+```{r,echo=F}
+stock_negative <- list()
+corr <- list()
+code_s <- c("00091.HK","00115.HK","00164.HK")
+
+for (i in code_s){
+stock_negative[[i]] <- api(api_name="hk_daily",ts_code=i,start_date="20140101",
+                end_date='20200407')
+corr[[i]] <- rbind(zgpa,stock_negative[[i]]) %>%
+  select(ts_code,trade_date,close) %>% 
+  mutate(trade_date = as.Date(trade_date,format="%Y%m%d"),close = as.numeric(close)) %>% 
+  group_by(ts_code) %>%
+  tq_transmute(
+    select=close,
+    mutate_fun=dailyReturn,
+    col_rename='day_returns'
+  ) %>% 
+  pivot_wider(names_from='ts_code',values_from='day_returns') %>%
+  select(-trade_date) %>%
+  na.omit()%>%
+  cor()
+}
+corr
+```
+
+**5.下图展示了三只港股价格的箱线图**
+```{r}
+df <- rbind(zgpa,jxgj,jhjt,zgbl) %>% 
+  mutate(trade_date = as.Date(trade_date,format="%Y%m%d"),
+        close = as.numeric(close))
+
+ggplot(filter(df,ts_code!="601318.SH"),
+       aes(x=ts_code,y=close,color=ts_code)) + 
+  geom_boxplot()
+```
+
+**6. 下表和图展示了三只港股与中国平安年度收益率的情况。**
+```{r}
+df <- df %>%
+  select(ts_code,trade_date,close) %>% 
+  group_by(ts_code) %>%
+  tq_transmute(
+    select=close,
+    mutate_fun=yearlyReturn
+  ) %>%
+  mutate(id=ifelse(ts_code!="601318.SH","港股","中国平安"))
+
+df %>% select(-id) %>% datatable()
+
+p <- ggplot(df,aes(x=trade_date,yearly.returns,color=ts_code))
+p + geom_line() + 
+  geom_point() +
+  labs(x="时间",y="年度收益率") +
+  ggtitle("股票年度收益率时间序列图") + 
+  facet_grid(id~.) +
+  theme(legend.position = "bottom")
+```
+
+**7. 下表为三只股票年度收益率的标准差。**
+```{r}
+df %>%
+  group_by(ts_code) %>%
+  filter(id!="中国平安") %>%
+  summarise(sd_return = sd(yearly.returns)) %>%
+  datatable()
+```
+
+**8. 下图展示了三只港股的各年累计收益率。**
+```{r}
+df %>%
+  group_by(ts_code) %>%
+  drop_na()%>%
+  mutate(cr=cumprod(1+yearly.returns)) %>%
+  mutate(cumulative_returns=cr-1) %>%
+  select(ts_code,trade_date,cumulative_returns) %>%
+  datatable()
+
+```
+
+
