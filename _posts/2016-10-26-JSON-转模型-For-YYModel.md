@@ -22,5 +22,5 @@ tags:
     </script>
 </head>
 
-$$\boldsymbol{Y}=\boldsymbol{X\beta}+\boldsymbol{varepsilon}$$
+$$\boldsymbol{Y}=\boldsymbol{X\beta}+\boldsymbol{\varepsilon}$$
 
