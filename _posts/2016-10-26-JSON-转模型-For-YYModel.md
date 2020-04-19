@@ -29,6 +29,8 @@ tags:
 $$w_{t+2}=w_{t}-\lambda * \frac{1}{B}\left(\sum_{i=1}^{B} \nabla L\left(x_{i}, w_{t}\right)+\sum_{j=1}^{B} \nabla L\left(x_{j}, w_{t+1}\right)\right.$$
 创建模型类我们可以通过[ESJsonFormat](https://github.com/EnjoySR/ESJsonFormat-Xcode)这款插件快速完成。
 
+$$w_{t+2}=w_{t}-\lambda * \frac{1}{B}\left(\sum_{i=1}^{B} \nabla L\left(x_{i}, w_{t}\right)+\sum_{j=1}^{B} \nabla L\left(x_{j}, w_{t+1}\right)\right.$$
+
 使用方法：
 
 将光标移动到代码行中 如下图的13行
