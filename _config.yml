@@ -2,7 +2,7 @@
 title: 神奇的地方
 SEOTitle: 神奇的地方
 header-img: img/tag-bg-o.jpg
-email: qiubaiying@gmail.com
+email: minjun.huang@outlook.com
 description: "Every failure is leading towards success."
 keyword: "经济学，R语言"
 url: "http://smile.shiki.github.io"          
@@ -12,7 +12,7 @@ github_repo: " " # you code repository
 # Sidebar settings
 sidebar: true                           # whether or not using Sidebar.
 sidebar-about-description: "Goals determine what you going to be!"
-sidebar-avatar: /img/about-BY-gentle.jpg      # use absolute URL, seeing it's used in both `/` and `/about/`
+sidebar-avatar: /img/myphoto2.jpg      # use absolute URL, seeing it's used in both `/` and `/about/`
 
 
 
