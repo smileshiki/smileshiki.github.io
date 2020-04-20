@@ -7,7 +7,7 @@ description: "Every failure is leading towards success."
 keyword: "经济学，R语言"
 url: "http://smile.shiki.github.io"          
 baseurl: ""     
-github_repo: " " # you code repository
+github_repo: "https://github.com/smileshiki/smileshiki.github.io.git" # you code repository
 
 # Sidebar settings
 sidebar: false                          # whether or not using Sidebar.
