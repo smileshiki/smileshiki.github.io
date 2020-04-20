@@ -6,7 +6,7 @@ email: minjun.huang@outlook.com
 description: " "
 keyword: " "
 url: "http://www.smileshiki.github.io"          # your host, for absolute URL
-baseurl: '/blog'
+baseurl: " "
 
 # Sidebar settings
 sidebar: true                           # whether or not using Sidebar.
